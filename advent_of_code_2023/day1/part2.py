@@ -55,7 +55,7 @@ def find_last_digit(line: str) -> str | None:
     return None
 
 
-def get_calibration_value(line: str) -> int:
+def find_calibration_value(line: str) -> int:
     """Get the calibration value for the given line."""
     first_digit = find_fist_digit(line)
     last_digit = find_last_digit(line)
@@ -68,7 +68,7 @@ def get_calibration_value(line: str) -> int:
 
 def sum_calibration_values(path: Path) -> int:
     """Sum all calibration values in the input file."""
-    return sum(get_calibration_value(line) for line in read_lines(path))
+    return sum(find_calibration_value(line) for line in read_lines(path))
 
 
 if __name__ == "__main__":
