@@ -56,7 +56,7 @@ def find_last_digit(line: str) -> str | None:
 
 
 def find_calibration_value(line: str) -> int:
-    """Get the calibration value for the given line."""
+    """Find the calibration value for the given line."""
     first_digit = find_fist_digit(line)
     last_digit = find_last_digit(line)
 
