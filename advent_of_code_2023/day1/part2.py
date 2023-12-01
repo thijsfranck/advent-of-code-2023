@@ -45,7 +45,6 @@ def find_digits(line: str) -> list[str]:
         if digit := DIGIT_MAP.get(sequence):
             digits.append(digit)
             sequence = char
-            continue
 
         while not any(word.startswith(sequence) for word in DIGIT_MAP):
             sequence = sequence[1:]
