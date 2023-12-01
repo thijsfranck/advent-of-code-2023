@@ -44,12 +44,11 @@ def find_digits(line: str) -> list[str]:
 
         if digit := DIGIT_MAP.get(sequence):
             digits.append(digit)
+            sequence = char
             continue
 
-        for word, digit in DIGIT_MAP.items():
-            if sequence.endswith(word):
-                digits.append(digit)
-                break
+        while not any(word.startswith(sequence) for word in DIGIT_MAP):
+            sequence = sequence[1:]
 
     return digits
 
