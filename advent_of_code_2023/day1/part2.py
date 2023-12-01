@@ -29,19 +29,6 @@ def read_lines(path: Path) -> Generator[str, None, None]:
             yield line
 
 
-def find_fist_digit(line: str) -> str | None:
-    """Find the first digit in a line."""
-    seen = ""
-    for char in line:
-        if char.isdigit():
-            return char
-        seen += char
-        for word, digit in DIGIT_MAP.items():
-            if seen.endswith(word):
-                return digit
-    return None
-
-
 def find_digits(line: str) -> list[str]:
     """Find all digits in a line."""
     digits = []
