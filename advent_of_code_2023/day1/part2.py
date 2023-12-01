@@ -38,7 +38,7 @@ def read_lines(path: Path) -> Generator[str, None, None]:
     """Read the input file line by line."""
     with Path.open(path) as f:
         while line := f.readline():
-            yield line
+            yield line.rstrip()
 
 
 def find_digit(line: str, dictionary: dict[str, str]) -> str | None:
