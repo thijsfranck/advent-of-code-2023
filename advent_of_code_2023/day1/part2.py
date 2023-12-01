@@ -42,28 +42,30 @@ def find_fist_digit(line: str) -> str | None:
     return None
 
 
-def find_last_digit(line: str) -> str | None:
-    """Find the last digit in a line."""
+def find_digits(line: str) -> list[str]:
+    """Find all digits in a line."""
+    digits = []
     seen = ""
-    for char in reversed(line):
+    for char in line:
+        seen += char
         if char.isdigit():
-            return char
-        seen = char + seen
+            digits.append(char)
+            continue
         for word, digit in DIGIT_MAP.items():
-            if seen.startswith(word):
-                return digit
-    return None
+            if seen.endswith(word):
+                digits.append(digit)
+                break
+    return digits
 
 
 def find_calibration_value(line: str) -> int:
     """Find the calibration value for the given line."""
-    first_digit = find_fist_digit(line)
-    last_digit = find_last_digit(line)
+    digits = find_digits(line)
 
-    if first_digit is None or last_digit is None:
+    if len(digits) == 0:
         raise InsufficientDigitsError
 
-    return int(first_digit + last_digit)
+    return int(digits[0] + digits[-1])
 
 
 def sum_calibration_values(path: Path) -> int:
