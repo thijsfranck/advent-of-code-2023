@@ -37,7 +37,7 @@ def find_fist_digit(line: str) -> str | None:
             return char
         seen += char
         for word, digit in DIGIT_MAP.items():
-            if word in seen:
+            if seen.endswith(word):
                 return digit
     return None
 
@@ -50,7 +50,7 @@ def find_last_digit(line: str) -> str | None:
             return char
         seen = char + seen
         for word, digit in DIGIT_MAP.items():
-            if word in seen:
+            if seen.startswith(word):
                 return digit
     return None
 
