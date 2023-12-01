@@ -32,16 +32,25 @@ def read_lines(path: Path) -> Generator[str, None, None]:
 def find_digits(line: str) -> list[str]:
     """Find all digits in a line."""
     digits = []
-    seen = ""
+    sequence = ""
+
     for char in line:
-        seen += char
         if char.isdigit():
             digits.append(char)
+            sequence = ""
             continue
+
+        sequence += char
+
+        if digit := DIGIT_MAP.get(sequence):
+            digits.append(digit)
+            continue
+
         for word, digit in DIGIT_MAP.items():
-            if seen.endswith(word):
+            if sequence.endswith(word):
                 digits.append(digit)
                 break
+
     return digits
 
 
