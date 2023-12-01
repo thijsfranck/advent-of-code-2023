@@ -21,6 +21,18 @@ DIGIT_MAP = {
     "nine": "9",
 }
 
+REVERSE_MAP = {
+    "eno": "1",
+    "owt": "2",
+    "eerht": "3",
+    "ruof": "4",
+    "evif": "5",
+    "xis": "6",
+    "neves": "7",
+    "thgie": "8",
+    "enin": "9",
+}
+
 
 def read_lines(path: Path) -> Generator[str, None, None]:
     """Read the input file line by line."""
@@ -29,37 +41,34 @@ def read_lines(path: Path) -> Generator[str, None, None]:
             yield line
 
 
-def find_digits(line: str) -> list[str]:
-    """Find all digits in a line."""
-    digits = []
+def find_digit(line: str, dictionary: dict[str, str]) -> str | None:
+    """Find the first digit in a line. The given dictionary lists digits as words."""
     sequence = ""
 
     for char in line:
         if char.isdigit():
-            digits.append(char)
-            sequence = ""
-            continue
+            return char
 
         sequence += char
 
-        if digit := DIGIT_MAP.get(sequence):
-            digits.append(digit)
-            sequence = char
+        if digit := dictionary.get(sequence):
+            return digit
 
-        while not any(word.startswith(sequence) for word in DIGIT_MAP):
+        while not any(word.startswith(sequence) for word in dictionary):
             sequence = sequence[1:]
 
-    return digits
+    return None
 
 
 def find_calibration_value(line: str) -> int:
     """Find the calibration value for the given line."""
-    digits = find_digits(line)
+    first = find_digit(line, DIGIT_MAP)
+    last = find_digit(line[::-1], REVERSE_MAP)
 
-    if len(digits) == 0:
+    if not first or not last:
         raise InsufficientDigitsError
 
-    return int(digits[0] + digits[-1])
+    return int(first + last)
 
 
 def sum_calibration_values(path: Path) -> int:
