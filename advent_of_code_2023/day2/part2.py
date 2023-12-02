@@ -2,10 +2,11 @@
 
 import logging
 from collections import defaultdict
-from collections.abc import Generator
+from collections.abc import Generator, Iterable
+from dataclasses import dataclass, field
 from functools import reduce
 from pathlib import Path
-from typing import TypedDict
+from typing import Protocol, TypedDict
 
 
 class CubeSet(TypedDict):
@@ -15,32 +16,124 @@ class CubeSet(TypedDict):
     config: dict[str, int]
 
 
-def read_lines(path: Path) -> Generator[str, None, None]:
-    """Read the input file line by line."""
+class NoGameIdError(Exception):
+    """Raised when a cube set has no game id."""
+
+
+class CubeSetReader(Protocol):
+    """A cube set reader."""
+
+    def read(self, char: str) -> None:
+        """Read a character."""
+
+    def reset(self) -> None:
+        """Reset the reader."""
+
+
+@dataclass
+class ReadingGameIdState:
+    """The state of the parser when reading a game id."""
+
+    parser_state: "Parser"
+    game_id: str = ""
+
+    def read(self, char: str) -> None:
+        """Read a character."""
+        if char == ":":
+            if not self.game_id:
+                raise NoGameIdError
+
+            self.parser_state.current_reader = self.parser_state.cube_set_state
+            return
+
+        if char.isdigit():
+            self.game_id += char
+
+    def reset(self) -> None:
+        """Reset the reader."""
+        self.game_id = ""
+
+
+@dataclass
+class ReadingCubeSetState:
+    """The state of the parser when reading a cube set."""
+
+    parser_state: "Parser"
+    color: str = ""
+    number: str = ""
+    cube_config: dict[str, int] = field(default_factory=lambda: defaultdict(int))
+
+    def read(self, char: str) -> None:
+        """Read a character."""
+        if char == " ":
+            return
+
+        if char.isdigit():
+            self.number += char
+            return
+
+        if char in {",", ";", "\n"}:
+            score = int(self.number)
+
+            if score > self.cube_config[self.color]:
+                self.cube_config[self.color] = score
+
+            self.color = ""
+            self.number = ""
+
+            return
+
+        self.color += char
+
+    def reset(self) -> None:
+        """Reset the reader."""
+        self.color = ""
+        self.number = ""
+        self.cube_config = defaultdict(int)
+
+
+@dataclass
+class Parser:
+    """A parser for cube sets."""
+
+    stream: Iterable[str]
+
+    current_reader: CubeSetReader = field(init=False)
+    game_id_state: ReadingGameIdState = field(init=False)
+    cube_set_state: ReadingCubeSetState = field(init=False)
+
+    def __post_init__(self) -> None:
+        """Initialize the parser state."""
+        self.game_id_state = ReadingGameIdState(self)
+        self.cube_set_state = ReadingCubeSetState(self)
+
+        self.current_reader = self.game_id_state
+
+    def build_cube_set(self) -> CubeSet:
+        """Build a cube set from the parser state."""
+        return {"id": int(self.game_id_state.game_id), "config": self.cube_set_state.cube_config}
+
+    def __iter__(self) -> Generator[CubeSet, None, None]:
+        """Read a stream of characters."""
+        for char in self.stream:
+            self.current_reader.read(char)
+
+            if char == "\n":
+                yield self.build_cube_set()
+                self.reset()
+
+    def reset(self) -> None:
+        """Reset the parser state."""
+        self.game_id_state.reset()
+        self.cube_set_state.reset()
+        self.current_reader = self.game_id_state
+
+
+def read_char_stream(path: Path) -> Generator[str, None, None]:
+    """Read a file as a stream of characters."""
     with Path.open(path) as f:
-        while line := f.readline():
-            yield line.rstrip()
-
-
-def parse_cube_set(line: str) -> CubeSet:
-    """Parse a line of the input file into a cube set."""
-    game, config_str = line.split(": ")
-
-    config = defaultdict(int)
-
-    cube_sets = config_str.split("; ")
-
-    for cube_set in cube_sets:
-        cubes = cube_set.split(", ")
-
-        for cube in cubes:
-            number_str, color = cube.split(" ")
-            number = int(number_str)
-
-            if number > config[color]:
-                config[color] = number
-
-    return {"id": int(game.split(" ")[1]), "config": config}
+        while char := f.read(1):
+            yield char
 
 
 def calculate_set_power(path: Path) -> int:
@@ -49,9 +142,10 @@ def calculate_set_power(path: Path) -> int:
 
     The power of a cube set is the product of all cube counts.
     """
+    stream = read_char_stream(path)
+
     return sum(
-        reduce(lambda x, y: x * y, cube_set["config"].values())
-        for cube_set in map(parse_cube_set, read_lines(path))
+        reduce(lambda x, y: x * y, cube_set["config"].values()) for cube_set in Parser(stream)
     )
 
 
