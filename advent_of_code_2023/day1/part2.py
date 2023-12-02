@@ -4,34 +4,40 @@ import logging
 from collections.abc import Generator
 from pathlib import Path
 
+from advent_of_code_2023 import TrieMap
+
 
 class InsufficientDigitsError(Exception):
     """Raised when the input does not contain enough digits."""
 
 
-DIGIT_MAP = {
-    "one": "1",
-    "two": "2",
-    "three": "3",
-    "four": "4",
-    "five": "5",
-    "six": "6",
-    "seven": "7",
-    "eight": "8",
-    "nine": "9",
-}
+DIGIT_MAP = TrieMap.create(
+    {
+        "one": "1",
+        "two": "2",
+        "three": "3",
+        "four": "4",
+        "five": "5",
+        "six": "6",
+        "seven": "7",
+        "eight": "8",
+        "nine": "9",
+    },
+)
 
-REVERSE_MAP = {
-    "eno": "1",
-    "owt": "2",
-    "eerht": "3",
-    "ruof": "4",
-    "evif": "5",
-    "xis": "6",
-    "neves": "7",
-    "thgie": "8",
-    "enin": "9",
-}
+REVERSE_MAP = TrieMap.create(
+    {
+        "eno": "1",
+        "owt": "2",
+        "eerht": "3",
+        "ruof": "4",
+        "evif": "5",
+        "xis": "6",
+        "neves": "7",
+        "thgie": "8",
+        "enin": "9",
+    },
+)
 
 
 def read_lines(path: Path) -> Generator[str, None, None]:
@@ -41,8 +47,8 @@ def read_lines(path: Path) -> Generator[str, None, None]:
             yield line.rstrip()
 
 
-def find_digit(line: str, dictionary: dict[str, str]) -> str | None:
-    """Find the first digit in a line. The given dictionary lists digits as words."""
+def find_digit(line: str, dictionary: TrieMap[str]) -> str | None:
+    """Find the first digit in a line."""
     sequence = ""
 
     for char in line:
@@ -51,10 +57,10 @@ def find_digit(line: str, dictionary: dict[str, str]) -> str | None:
 
         sequence += char
 
-        if digit := dictionary.get(sequence):
+        if digit := dictionary[sequence]:
             return digit
 
-        while not any(word.startswith(sequence) for word in dictionary):
+        while not any(dictionary.find(sequence)):
             sequence = sequence[1:]
 
     return None
