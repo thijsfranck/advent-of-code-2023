@@ -1,4 +1,4 @@
-"""Tests for Advent of Code 2023 Day 2 Part 1."""
+"""Tests for Advent of Code 2023 Day 2 Part 2."""
 
 from pathlib import Path
 

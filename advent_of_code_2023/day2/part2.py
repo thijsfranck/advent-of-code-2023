@@ -1,4 +1,4 @@
-"""Advent of Code 2023 Day 2 Part 1."""
+"""Advent of Code 2023 Day 2 Part 2."""
 
 import logging
 from collections import defaultdict
