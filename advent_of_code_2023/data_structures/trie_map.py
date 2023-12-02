@@ -65,13 +65,14 @@ class TrieMap(Generic[T]):
             for suffix, value in child:
                 yield (key + suffix, value)
 
-    def find(self, key: str) -> Iterator[tuple[str, T]]:
+    def find(self, prefix: str) -> Iterator[tuple[str, T]]:
         """Find all entries with the given prefix."""
-        if not key:
+        if not prefix:
             yield from self
             return
 
-        if key[0] not in self.children:
+        if prefix[0] not in self.children:
             return
 
-        yield from self.children[key[0]].find(key[1:])
+        for suffix, value in self.children[prefix[0]].find(prefix[1:]):
+            yield (prefix[0] + suffix, value)
