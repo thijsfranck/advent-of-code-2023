@@ -49,19 +49,19 @@ def read_lines(path: Path) -> Generator[str, None, None]:
 
 def find_digit(line: str, dictionary: TrieMap[str]) -> str | None:
     """Find the first digit in a line."""
-    sequence = ""
+    prefix = ""
 
     for char in line:
         if char.isdigit():
             return char
 
-        sequence += char
+        prefix += char
 
-        if digit := dictionary[sequence]:
+        if digit := dictionary[prefix]:
             return digit
 
-        while not any(dictionary.find(sequence)):
-            sequence = sequence[1:]
+        while not any(dictionary.find(prefix)):
+            prefix = prefix[1:]
 
     return None
 
