@@ -45,7 +45,7 @@ def parse_cube_set(line: str) -> CubeSet:
 
 def calculate_set_power(path: Path) -> int:
     """
-    Calculate the sum of the power of akl cube sets.
+    Calculate the sum of the power of all cube sets.
 
     The power of a cube set is the product of all cube counts.
     """
