@@ -12,4 +12,4 @@ def test__sum_gear_ratios_with_example_input() -> None:
 
 def test__sum_gear_ratios_with_puzzle_input() -> None:
     """Test sum_gear_ratios with puzzle input."""
-    assert sum_gear_ratios(Path(__file__).parent / "input/input") == 539637
+    assert sum_gear_ratios(Path(__file__).parent / "input/input") == 82818007
