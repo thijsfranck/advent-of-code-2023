@@ -1,4 +1,4 @@
-"""Advent of Code 2023 Day 5 Part 2."""
+"""Advent of Code 2023 Day 5 Part 1."""
 
 import contextlib
 import logging
