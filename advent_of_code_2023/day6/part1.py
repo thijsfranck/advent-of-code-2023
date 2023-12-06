@@ -45,7 +45,7 @@ def calculate_winning_strategies(time_distance: tuple[int, ...]) -> int:
 
     d = time**2 - 4 * record_distance
 
-    if d < 0:
+    if d <= 0:
         return 0
 
     r1 = (time - d**0.5) / 2
