@@ -1,6 +1,7 @@
 """Advent of Code 2023 Day 6 Part 2."""
 
 import logging
+import math
 from collections.abc import Generator, Iterable
 from pathlib import Path
 
@@ -36,14 +37,15 @@ def calculate_winning_strategies(time: int, record_distance: int) -> int:
     Distance travelled must be greater than the record distance in the same time.
     Accelleration is linear to the time spent charging. One unit of charge is one unit of time.
     """
-    winning_strategies = 0
+    d = time**2 - 4 * record_distance
 
-    for charge_time in range(time + 1):
-        distance_travelled = charge_time * (time - charge_time)
-        if distance_travelled > record_distance:
-            winning_strategies += 1
+    if d < 0:
+        return 0
 
-    return winning_strategies
+    r1 = (time - d**0.5) / 2
+    r2 = (time + d**0.5) / 2
+
+    return math.floor(r2 - r1)
 
 
 def calculate_solution(path: Path) -> int:
