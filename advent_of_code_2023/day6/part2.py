@@ -42,17 +42,16 @@ def calculate_winning_strategies(time: int, record_distance: int) -> int:
     if d < 0:
         return 0
 
-    r1 = math.ceil(time - d**0.5) / 2
-    r2 = math.floor(time + d**0.5) / 2
+    r1 = (time - d**0.5) / 2
+    r2 = (time + d**0.5) / 2
 
-    if 0 <= r1 <= time and 0 <= r2 <= time:
-        return r2 - r1
-    if 0 <= r1 <= time:
-        return time - r1
-    if 0 <= r2 <= time:
-        return r2
+    if r1 % 1 == 0:
+        r1 += 1
 
-    return time
+    if r2 % 1 == 0:
+        r2 -= 1
+
+    return math.floor(r2) - math.ceil(r1) + 1
 
 
 def calculate_solution(path: Path) -> int:

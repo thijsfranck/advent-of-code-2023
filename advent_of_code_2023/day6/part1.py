@@ -1,6 +1,7 @@
 """Advent of Code 2023 Day 6 Part 1."""
 
 import logging
+import math
 from collections.abc import Generator, Iterable
 from functools import reduce
 from pathlib import Path
@@ -42,14 +43,21 @@ def calculate_winning_strategies(time_distance: tuple[int, ...]) -> int:
     """
     time, record_distance = time_distance
 
-    winning_strategies = 0
+    d = time**2 - 4 * record_distance
 
-    for charge_time in range(time + 1):
-        distance_travelled = charge_time * (time - charge_time)
-        if distance_travelled > record_distance:
-            winning_strategies += 1
+    if d < 0:
+        return 0
 
-    return winning_strategies
+    r1 = (time - d**0.5) / 2
+    r2 = (time + d**0.5) / 2
+
+    if r1 % 1 == 0:
+        r1 += 1
+
+    if r2 % 1 == 0:
+        r2 -= 1
+
+    return math.floor(r2) - math.ceil(r1) + 1
 
 
 def calculate_solution(path: Path) -> int:
