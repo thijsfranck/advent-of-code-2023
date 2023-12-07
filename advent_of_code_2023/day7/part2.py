@@ -14,7 +14,7 @@ def score(hand: str) -> int:
     return sum(hand.count(card) for card in hand)
 
 
-@dataclass
+@dataclass(frozen=True)
 class Hand:
     """A hand of cards."""
 
