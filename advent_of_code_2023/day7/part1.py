@@ -21,19 +21,24 @@ class Hand:
     bid: int
     cards: tuple[str, ...]
 
-    @cached_property
-    def score(self) -> int:
-        """Return the score of the hand."""
-        return score(self.cards)
-
     def __lt__(self, other: "Hand") -> bool:
-        """Return whether the hand is less than the other hand."""
-        if self.score == other.score:
+        """
+        Return whether the strength of this hand is less than the strength of the other hand.
+
+        Strength is primarily based on the highest possible win condition. If both hands have the
+        same win condition, the hand with the highest card going from left to right wins.
+        """
+        if self.strength == other.strength:
             for a, b in zip(self.cards, other.cards, strict=True):
                 if a != b:
                     return CARD_STRENGTH.index(a) < CARD_STRENGTH.index(b)
 
-        return self.score < other.score
+        return self.strength < other.strength
+
+    @cached_property
+    def strength(self) -> int:
+        """Return the strength of the hand based on the highest possible win condition."""
+        return score(self.cards)
 
 
 @dataclass
@@ -55,6 +60,7 @@ class CardsReader:
     def cards(self) -> tuple[str, ...]:
         """Return the cards as a tuple."""
         return tuple(self._symbols)
+
 
 @dataclass
 class BidReader:
