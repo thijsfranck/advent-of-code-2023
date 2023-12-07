@@ -8,15 +8,10 @@ from pathlib import Path
 
 CARD_STRENGTH = "23456789TJQKA"
 
-WIN_CONDITIONS = [
-    "is_five_of_a_kind",
-    "is_four_of_a_kind",
-    "is_full_house",
-    "is_three_of_a_kind",
-    "is_two_pairs",
-    "is_one_pair",
-    "is_high_card",
-]
+
+def score(hand: tuple[str, ...]) -> int:
+    """Return the score of the hand."""
+    return sum(hand.count(card) for card in hand)
 
 
 @dataclass
@@ -24,82 +19,21 @@ class Hand:
     """A hand of cards."""
 
     bid: int
-    cards: tuple[str, str, str, str, str]
-
-    def is_five_of_a_kind(self) -> bool:
-        """Return whether the hand is five of a kind."""
-        return len(set(self.cards)) == 1
-
-    def is_four_of_a_kind(self) -> bool:
-        """Return whether the hand is four of a kind."""
-        return (
-            len(self.card_set) == 2  # noqa: PLR2004
-            and any(self.cards.count(card) == 4 for card in self.card_set)  # noqa: PLR2004
-        )
-
-    def is_full_house(self) -> bool:
-        """Return whether the hand is a full house."""
-        return (
-            len(self.card_set) == 2  # noqa: PLR2004
-            and any(self.cards.count(card) == 3 for card in self.card_set)  # noqa: PLR2004
-        )
-
-    def is_three_of_a_kind(self) -> bool:
-        """Return whether the hand is three of a kind."""
-        return (
-            len(self.card_set) == 3  # noqa: PLR2004
-            and any(self.cards.count(card) == 3 for card in self.card_set)  # noqa: PLR2004
-        )
-
-    def is_two_pairs(self) -> bool:
-        """Return whether the hand is two pairs."""
-        return (
-            len(self.card_set) == 3  # noqa: PLR2004
-            and any(self.cards.count(card) == 2 for card in self.card_set)  # noqa: PLR2004
-        )
-
-    def is_one_pair(self) -> bool:
-        """Return whether the hand is one pair."""
-        return (
-            len(self.card_set) == 4  # noqa: PLR2004
-            and any(self.cards.count(card) == 2 for card in self.card_set)  # noqa: PLR2004
-        )
-
-    def is_high_card(self) -> bool:
-        """Return whether the hand is a high card."""
-        return len(self.card_set) == 5  # noqa: PLR2004
+    cards: tuple[str, ...]
 
     @cached_property
-    def card_set(self) -> set[str]:
-        """Return the set of cards excluding jokers."""
-        return set(self.cards)
-
-    @property
-    def high_card_strength(self) -> int:
-        """Return the strength of the high card."""
-        return max(CARD_STRENGTH.index(card) for card in self.cards)
-
-    @cached_property
-    def win_condition(self) -> str:
-        """Return the win condition of the hand."""
-        for win_condition in WIN_CONDITIONS:
-            has_win_condition = getattr(self, win_condition)()
-            if has_win_condition:
-                return win_condition
-        return WIN_CONDITIONS[-1]
+    def score(self) -> int:
+        """Return the score of the hand."""
+        return score(self.cards)
 
     def __lt__(self, other: "Hand") -> bool:
         """Return whether the hand is less than the other hand."""
-        if self.win_condition != other.win_condition:
-            return WIN_CONDITIONS.index(other.win_condition) < WIN_CONDITIONS.index(
-                self.win_condition,
-            )
+        if self.score == other.score:
+            for a, b in zip(self.cards, other.cards, strict=True):
+                if a != b:
+                    return CARD_STRENGTH.index(a) < CARD_STRENGTH.index(b)
 
-        for a, b in zip(self.cards, other.cards, strict=True):
-            if a != b:
-                return CARD_STRENGTH.index(a) < CARD_STRENGTH.index(b)
-
-        return False
+        return self.score < other.score
 
 
 @dataclass
@@ -118,11 +52,9 @@ class CardsReader:
         self._symbols = ""
 
     @property
-    def cards(self) -> tuple[str, str, str, str, str]:
+    def cards(self) -> tuple[str, ...]:
         """Return the cards as a tuple."""
-        a, b, c, d, e = self._symbols
-        return (a, b, c, d, e)
-
+        return tuple(self._symbols)
 
 @dataclass
 class BidReader:
