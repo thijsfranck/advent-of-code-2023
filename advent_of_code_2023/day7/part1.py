@@ -9,7 +9,7 @@ from pathlib import Path
 CARD_STRENGTH = "23456789TJQKA"
 
 
-def score(hand: tuple[str, ...]) -> int:
+def score(hand: str) -> int:
     """Return the score of the hand."""
     return sum(hand.count(card) for card in hand)
 
@@ -19,7 +19,7 @@ class Hand:
     """A hand of cards."""
 
     bid: int
-    cards: tuple[str, ...]
+    cards: str
 
     def __lt__(self, other: "Hand") -> bool:
         """
@@ -45,21 +45,16 @@ class Hand:
 class CardsReader:
     """Read cards from a stream of characters."""
 
-    _symbols = ""
+    cards = ""
 
     def read(self, char: str) -> None:
         """Read a character."""
         if char in CARD_STRENGTH:
-            self._symbols += char
+            self.cards += char
 
     def reset(self) -> None:
         """Reset the reader."""
-        self._symbols = ""
-
-    @property
-    def cards(self) -> tuple[str, ...]:
-        """Return the cards as a tuple."""
-        return tuple(self._symbols)
+        self.cards = ""
 
 
 @dataclass
