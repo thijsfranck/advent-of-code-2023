@@ -3,7 +3,7 @@
 import logging
 from collections.abc import Generator, Iterable
 from dataclasses import dataclass
-from functools import cached_property, reduce
+from functools import cached_property
 from itertools import pairwise
 from pathlib import Path
 
@@ -24,7 +24,7 @@ class OasisReading:
             layers.append(current)
             current = [b - a for a, b in pairwise(current)]
 
-        return reduce(lambda a, b: a + b, (layer[-1] for layer in reversed(layers)))
+        return sum(layer[-1] for layer in reversed(layers))
 
 
 def parse_oasis(stream: Iterable[str]) -> Generator[OasisReading, None, None]:
