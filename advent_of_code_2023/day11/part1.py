@@ -19,11 +19,10 @@ def read_galaxies(path: Path) -> set[tuple[int, int]]:
     y_offset = 0
 
     for y, line in enumerate(lines):
-        expanded_line = line
 
         local_galaxies: set[tuple[int, int]] = set()
 
-        for x, char in enumerate(expanded_line):
+        for x, char in enumerate(line):
             if char == "#":
                 x_offset = len([i for i in empty_columns if i < x])
                 local_galaxies.add((x + x_offset, y + y_offset))
