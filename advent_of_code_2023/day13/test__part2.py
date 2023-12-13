@@ -12,4 +12,4 @@ def test__calculate_solution_with_example_data() -> None:
 
 def test__calculate_solution_with_puzzle_data() -> None:
     """Test whether the calculated_solution matches the puzzle solution."""
-    assert calculate_solution(Path(__file__).parent / "input/input") == 0
+    assert calculate_solution(Path(__file__).parent / "input/input") == 41566

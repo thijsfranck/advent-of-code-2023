@@ -31,32 +31,21 @@ def hamming_distance(a: str, b: str) -> int:
     return sum(1 for x, y in zip(a, b, strict=True) if x != y)
 
 
-def are_reflecting(a: str, b: str) -> bool:
-    """Check if two strings are reflecting."""
-    return hamming_distance(a, b) <= 1
-
-
 def find_reflection(pattern: list[str], allowed_smudges: int = 1) -> int:
     """Check a pattern for reflections."""
-    for index, pair in enumerate(pairwise(pattern)):
-        a, b = pair
-
+    for index, (a, b) in enumerate(pairwise(pattern)):
         smudges_remaining = allowed_smudges - hamming_distance(a, b)
 
         if smudges_remaining < 0:
             continue
 
-        offset = 1
-
-        while index + 1 + offset < len(pattern) and index - offset >= 0:
+        for offset in range(1, min(index + 1, len(pattern) - index - 1)):
             smudges_remaining -= hamming_distance(
                 pattern[index + 1 + offset], pattern[index - offset],
             )
 
             if smudges_remaining < 0:
                 break
-
-            offset += 1
         else:
             if smudges_remaining == 0:
                 return index + 1

@@ -28,18 +28,13 @@ def transpose(pattern: list[str]) -> list[str]:
 
 def find_reflection(pattern: list[str]) -> int:
     """Check a pattern for reflections."""
-    for index, pair in enumerate(pairwise(pattern)):
-        a, b = pair
-
+    for index, (a, b) in enumerate(pairwise(pattern)):
         if a != b:
             continue
 
-        offset = 1
-
-        while index + 1 + offset < len(pattern) and index - offset >= 0:
+        for offset in range(1, min(index + 1, len(pattern) - index - 1)):
             if pattern[index + 1 + offset] != pattern[index - offset]:
                 break
-            offset += 1
         else:
             return index + 1
 
