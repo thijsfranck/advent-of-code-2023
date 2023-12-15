@@ -47,11 +47,11 @@ def parse_steps(stream: Iterable[str]) -> Generator[Step, None, None]:
             continue
 
 
-def calculate_hash(initialization_sequence: str) -> int:
-    """Calculate the hash of an initialization sequence."""
+def calculate_hash(label: str) -> int:
+    """Calculate the hash of a label."""
     return reduce(
         lambda result, char: ((result + ord(char)) * 17) % 256,
-        initialization_sequence,
+        label,
         0,
     )
 
