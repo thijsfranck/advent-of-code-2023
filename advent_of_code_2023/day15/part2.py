@@ -16,7 +16,7 @@ def read_char_stream(path: Path) -> Generator[str, None, None]:
             yield char
 
 
-def parse_initialization_sequences(stream: Iterable[str]) -> Generator[Step, None, None]:
+def parse_steps(stream: Iterable[str]) -> Generator[Step, None, None]:
     """Parse steps from a stream of characters."""
     current_label = ""
     current_operator = ""
@@ -60,7 +60,7 @@ def calculate_solution(path: Path) -> int:
     """Calculate the solution."""
     boxes: dict[int, dict[str, int]] = defaultdict(dict)
 
-    for label, operator, focal_length in parse_initialization_sequences(read_char_stream(path)):
+    for label, operator, focal_length in parse_steps(read_char_stream(path)):
         label_hash = calculate_hash(label)
         box = boxes[label_hash]
         if operator == "=":
