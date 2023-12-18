@@ -32,7 +32,7 @@ def read_heatmap(path: Path) -> list[list[int]]:
 def dijkstra(
     graph: list[list[int]],
     start_point: Coordinate,
-) -> dict[Coordinate, float]:
+) -> dict[Coordinate, Distance]:
     """Find the distances from the start point to all other points in the graph."""
     distances: dict[Coordinate, dict[Direction, dict[Step, Distance]]] = defaultdict(
         lambda: defaultdict(lambda: defaultdict(lambda: float("inf"))),
@@ -83,7 +83,7 @@ def dijkstra(
     }
 
 
-def calculate_solution(path: Path) -> float:
+def calculate_solution(path: Path) -> Distance:
     """Calculate the solution."""
     heatmap = read_heatmap(path)
 
