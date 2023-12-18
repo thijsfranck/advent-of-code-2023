@@ -87,8 +87,7 @@ def dijkstra(
             if dist_to_new_point >= distances[new_coordinate][new_direction][new_steps]:
                 continue
 
-            if new_steps >= MIN_STEPS:
-                distances[new_coordinate][new_direction][new_steps] = dist_to_new_point
+            distances[new_coordinate][new_direction][new_steps] = dist_to_new_point
 
             heapq.heappush(
                 min_heap,
