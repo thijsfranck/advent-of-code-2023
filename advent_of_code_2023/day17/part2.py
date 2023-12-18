@@ -3,6 +3,7 @@
 import heapq
 import logging
 from collections import defaultdict
+from dataclasses import dataclass
 from pathlib import Path
 
 Coordinate = tuple[int, int]
@@ -24,6 +25,18 @@ MAX_STEPS = 10
 MIN_STEPS = 4
 
 
+@dataclass
+class NoPathFoundError(Exception):
+    """Raised when no path is found."""
+
+    end: Coordinate
+    start: Coordinate
+
+    def __str__(self) -> str:
+        """Return the string representation of the error."""
+        return f"No path found between {self.start} and {self.end}."
+
+
 def read_heatmap(path: Path) -> list[list[int]]:
     """Read a map from a file."""
     with Path.open(path) as f:
@@ -32,9 +45,10 @@ def read_heatmap(path: Path) -> list[list[int]]:
 
 def dijkstra(
     graph: list[list[int]],
-    start_point: Coordinate,
-) -> dict[Coordinate, Distance]:
-    """Find the distances from the start point to all other points in the graph."""
+    start: Coordinate,
+    end: Coordinate,
+) -> Distance:
+    """Find the smallest distance between the given start and end points."""
     distances: dict[Coordinate, dict[Direction, dict[Step, Distance]]] = defaultdict(
         lambda: defaultdict(lambda: defaultdict(lambda: float("inf"))),
     )
@@ -42,7 +56,7 @@ def dijkstra(
     bound_x, bound_y = len(graph[0]), len(graph)
 
     min_heap: list[tuple[Distance, Coordinate, Direction, Step]] = [
-        (0, start_point, (0, 0), MAX_STEPS),
+        (0, start, (0, 0), MAX_STEPS),
     ]
 
     while len(min_heap):
@@ -67,6 +81,9 @@ def dijkstra(
             new_coordinate = (nx, ny)
             new_steps = steps + 1 if new_direction == direction else 1
 
+            if new_coordinate == end and new_steps >= MIN_STEPS:
+                return dist_to_new_point
+
             if dist_to_new_point >= distances[new_coordinate][new_direction][new_steps]:
                 continue
 
@@ -83,10 +100,7 @@ def dijkstra(
                 ),
             )
 
-    return {
-        coordinate: min(distance for steps in directions.values() for distance in steps.values())
-        for coordinate, directions in distances.items()
-    }
+    raise NoPathFoundError(start=start, end=end)
 
 
 def calculate_solution(path: Path) -> Distance:
@@ -96,9 +110,7 @@ def calculate_solution(path: Path) -> Distance:
     start = (0, 0)
     end = (len(heatmap[0]) - 1, len(heatmap) - 1)
 
-    distances = dijkstra(heatmap, start)
-
-    return distances[end]
+    return dijkstra(heatmap, start, end)
 
 
 if __name__ == "__main__":
