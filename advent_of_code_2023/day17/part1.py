@@ -78,7 +78,7 @@ def dijkstra(
             )
 
     return {
-        coordinate: min(min(steps.values()) for steps in directions.values())
+        coordinate: min(step for steps in directions.values() for step in steps.values())
         for coordinate, directions in distances.items()
     }
 
