@@ -49,8 +49,8 @@ def dijkstra(
     end: Coordinate,
 ) -> Distance:
     """Find the smallest distance between the given start and end points."""
-    distances: dict[Coordinate, dict[Direction, dict[Step, Distance]]] = defaultdict(
-        lambda: defaultdict(lambda: defaultdict(lambda: float("inf"))),
+    distances: dict[tuple[Coordinate, Direction, Step], Distance] = defaultdict(
+        lambda: float("inf"),
     )
 
     bound_x, bound_y = len(graph[0]), len(graph)
@@ -84,10 +84,12 @@ def dijkstra(
             if new_coordinate == end and new_steps >= MIN_STEPS:
                 return dist_to_new_point
 
-            if dist_to_new_point >= distances[new_coordinate][new_direction][new_steps]:
+            key = (new_coordinate, new_direction, new_steps)
+
+            if dist_to_new_point >= distances[key]:
                 continue
 
-            distances[new_coordinate][new_direction][new_steps] = dist_to_new_point
+            distances[key] = dist_to_new_point
 
             heapq.heappush(
                 min_heap,
